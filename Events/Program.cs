@@ -13,34 +13,47 @@ namespace Events
             transaction.StartTransaction(false);
         }
 
-        private static void AfterComplete(object sender, string message)
+        private static void AfterComplete(object sender, TransectionEventArgs eventArgs)
         {
-            Console.WriteLine($"Sender: {sender}, Completed with message: {message}");
+            Console.WriteLine($"Sender: {sender}, Completed with message: {eventArgs.Message} Status: {eventArgs.Ok}");
         }
     }
 
 
     public class Transaction
     {
-        public event EventHandler<string> TransactionComplete;
+        public event EventHandler<TransectionEventArgs> TransactionComplete;
 
         public void StartTransaction(bool ok)
         {
             //Do something;
             if(ok)
             {
-                 OnTransactionComplete("All ok");
+                 OnTransactionComplete("All ok", true);
             }
             else
             {
-                 OnTransactionComplete("Failed");
+                 OnTransactionComplete("Failed", false);
             }
 
         }
 
-        protected virtual void OnTransactionComplete(string message)
+        protected virtual void OnTransactionComplete(string message, bool ok)
         {
-            TransactionComplete?.Invoke(this, message);
+            var eventArgs = new TransectionEventArgs
+            {
+                Message = message,
+                Ok = ok
+            };
+
+            TransactionComplete?.Invoke(this, eventArgs);
         }
+    }
+
+    public class TransectionEventArgs : EventArgs
+    {
+        public string Message { get; set; }
+
+        public bool Ok { get; set; }
     }
 }
