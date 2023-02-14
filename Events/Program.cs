@@ -9,18 +9,41 @@ namespace Events
         static void Main(string[] args)
         {
             var transaction = new Transaction();
-            transaction.TransactionComplete += AfterComplete;
+            var sub = new SubScriber(transaction);
+            var sub2 = new SubScriber2(transaction);
             transaction.StartTransaction(false);
+        }
+
+    }
+
+    public class SubScriber
+    {
+        public SubScriber(Transaction transaction)
+        {
+            transaction.TransactionComplete += AfterComplete;
         }
 
         private static void AfterComplete(object sender, TransectionEventArgs eventArgs)
         {
             Console.WriteLine($"Sender: {sender}, Completed with message: {eventArgs.Message} Status: {eventArgs.Ok}");
         }
+    } 
+    
+    public class SubScriber2
+    {
+        public SubScriber2(Transaction transaction)
+        {
+            transaction.TransactionComplete += AfterComplete;
+
+        }
+        private static void AfterComplete(object sender, TransectionEventArgs eventArgs)
+        {
+            Console.WriteLine($"Here we do something else");
+        }
     }
 
 
-    public class Transaction
+    public class Transaction //Publisher
     {
         public event EventHandler<TransectionEventArgs> TransactionComplete;
 
@@ -40,7 +63,7 @@ namespace Events
 
         protected virtual void OnTransactionComplete(string message, bool ok)
         {
-            var eventArgs = new TransectionEventArgs
+            var eventArgs = new TransectionEventArgs //Eventuellt flytta upp i Transaction
             {
                 Message = message,
                 Ok = ok
