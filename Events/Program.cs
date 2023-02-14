@@ -10,7 +10,7 @@ namespace Events
         {
             var transaction = new Transaction();
             var sub = new SubScriber(transaction);
-            var sub2 = new SubScriber2(transaction);
+            var sub2 = new SubScriber2(transaction.TransactionComplete);
             transaction.StartTransaction(false);
         }
 
@@ -31,9 +31,9 @@ namespace Events
     
     public class SubScriber2
     {
-        public SubScriber2(Transaction transaction)
+        public SubScriber2(EventHandler<TransectionEventArgs> transactionComplete)
         {
-            transaction.TransactionComplete += AfterComplete;
+            transactionComplete += AfterComplete;
 
         }
         private static void AfterComplete(object sender, TransectionEventArgs eventArgs)
